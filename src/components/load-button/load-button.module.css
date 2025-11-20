@@ -1,0 +1,29 @@
+@font-face {
+    font-family: "Roboto";
+    src: url("../../../fonts/Roboto-Regular.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+}
+
+
+.load-button {
+    box-sizing: border-box;
+    display: flex;
+    font-family: "Roboto", sans-serif;
+    background-color: #F2F9FE;
+    letter-spacing: 1.25px;
+    color: #2196F3;
+    margin: 0 auto;
+    width: 154px;
+    height: 36px;
+    border: none;
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 1px 3px 7px #00000024;
+    margin-bottom: 44px;
+}
+
+.load-button:hover {
+    cursor: pointer;
+}
