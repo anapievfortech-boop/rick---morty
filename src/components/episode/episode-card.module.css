@@ -1,0 +1,39 @@
+.episode-card {
+  display: flex;
+  width: 240px;
+  height: 128px;
+  border-radius: 4px;
+  background-color: #fafafa;
+  box-shadow: var(--shadow-down);
+  padding: 38px 16px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.episode-name {
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
+  line-height: 30px;
+  letter-spacing: 0.15px;
+  margin: 0;
+  margin-bottom: 1px;
+}
+
+.episode-air-date {
+  margin: 0;
+  font-family: "Roboto-Regular", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: 0.25px;
+  color: #00000099;
+  margin-bottom: 5px;
+}
+
+.episode-number {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: 0.25px;
+}

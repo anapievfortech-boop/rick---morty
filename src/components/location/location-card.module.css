@@ -1,0 +1,29 @@
+.location-card {
+  display: flex;
+  width: 240px;
+  height: 128px;
+  border-radius: 4px;
+  background-color: #fafafa;
+  box-shadow: var(--shadow-down);
+  flex-wrap: wrap;
+  padding: 38px 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.location-name {
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
+  line-height: 30px;
+  letter-spacing: 0.15px;
+  margin: 0;
+}
+
+.location-type {
+  margin: 0;
+  font-family: "Roboto-Thin", sans-serif;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: 0.25px;
+  color: #00000099;
+}
