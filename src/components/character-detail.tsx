@@ -95,6 +95,7 @@ const CharDetails: FC<IProps> = ({
               <p className="list-descr">Anatomy Park</p>
               <p className="list-descr-low">December 16, 2013</p>
             </li>
+            
             <li className="list-item-episodes">
               <p className="list-chapter">S01E04</p>
               <p className="list-descr">M. Night Shaym-Aliens!</p>
