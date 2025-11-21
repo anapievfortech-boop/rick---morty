@@ -1,11 +1,57 @@
 import CharacterCard from "../components/character/character-card";
 import LoadMore from "../components/load-button/load-more";
 import type { JSX } from "react";
-import { characterData } from "../components/character/character-data";
 import Logo from "../assets/Rick-and-Morty-logo.svg";
 import styles from "../components/character.module.css";
+import { useState, useEffect } from "react";
+// import AdvancedFilter from "../components/mobile-components/advanced-filter";
+
+interface Character {
+  id: number;
+  image: string;
+  name: string;
+  species: string;
+  gender?: string;
+  status?: string;
+  origin?: object;
+  type?: string;
+  location?: object;
+  episode?: any;
+  url?: string;
+  created?: string;
+}
 
 export default function Characters(): JSX.Element {
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const Characterloading = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("https://rickandmortyapi.com/api/character");
+        const data = await response.json();
+        setCharacters(data.results || [])
+      } catch (err: any) {
+        setError(err.message);
+        console.log("Ошибка", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    Characterloading();
+  }, []);
+
+  if (loading) {
+    return <div>Идет загрузка, подождите!</div>;
+  }
+
+  if (error) {
+    return <div>Произошла ошибка!</div>;
+  }
+
   return (
     <>
       <div className={styles["wrapper"]}>
@@ -20,24 +66,36 @@ export default function Characters(): JSX.Element {
                 placeholder="Filter by name..."
               />
             </div>
-
-            <select className={styles["form-select"]} name="Species" id="">
+            {/* <AdvancedFilter /> */}
+            <select
+              className={`${styles["form-select"]} ${styles["hide-on-mobile"]}`}
+              name="Species"
+              id=""
+            >
               <option value="Species">Species</option>
             </select>
-            <select className={styles["form-select"]} name="Species" id="">
+            <select
+              className={`${styles["form-select"]} ${styles["hide-on-mobile"]}`}
+              name="Species"
+              id=""
+            >
               <option value="Gender">Gender</option>
             </select>
-            <select className={styles["form-select"]} name="Species" id="">
+            <select
+              className={`${styles["form-select"]} ${styles["hide-on-mobile"]}`}
+              name="Species"
+              id=""
+            >
               <option value="Status">Status</option>
             </select>
           </form>
           <ul className={styles["character-list"]}>
-            {characterData.map((character) => (
+            {characters.map((character) => (
               <CharacterCard
                 key={character.id}
                 id={character.id}
                 name={character.name}
-                img={character.img}
+                image={character.image}
                 species={character.species}
               />
             ))}

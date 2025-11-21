@@ -37,3 +37,10 @@
   line-height: 21px;
   letter-spacing: 0.25px;
 }
+
+@media (max-width: 500px) {
+  .episode-card {
+    width: 312px;
+    height: 128px;
+  }
+}

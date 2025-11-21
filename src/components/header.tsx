@@ -7,7 +7,7 @@ export default function Header() {
       <div className="wrapper">
         <img className="header-logo" src={headerLogo} alt="header-logo" />
         <nav>
-          <ul className="header-list">
+          <ul className="header-list hide-on-mobile">
             <Link className="nav-list" to="/">
               <li>Characters</li>
             </Link>

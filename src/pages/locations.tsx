@@ -21,10 +21,10 @@ export default function Locations() {
               placeholder="Filter by name..."
             />
           </div>
-          <select className="form-select" name="Type" id="">
+          <select className="form-select hide-on-mobile" name="Type" id="">
             <option value="Type">Type</option>
           </select>
-          <select className="form-select" name="Dimension" id="">
+          <select className="form-select hide-on-mobile" name="Dimension" id="">
             <option value="Dimension">Dimension</option>
           </select>
         </form>

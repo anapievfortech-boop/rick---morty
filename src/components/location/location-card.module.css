@@ -27,3 +27,12 @@
   letter-spacing: 0.25px;
   color: #00000099;
 }
+
+@media (max-width: 500px) {
+  .location-card {
+    width: 312px;
+    height: 128px;
+    flex-direction: column;
+  }
+}
+

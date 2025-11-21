@@ -16,6 +16,8 @@ a {
 }
 
 .character-card-img {
+  width: 240px;
+  height: 168px;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
@@ -32,4 +34,17 @@ a {
   font-family: "Roboto-Thin";
   margin: 0;
   margin-left: 16px;
+}
+
+@media (max-width: 500px) {
+
+  .character-card {
+    width: 312px;
+    height: 308px;
+  }
+
+  .character-card-img {
+    width: 312px;
+    height: 232px;
+  }
 }
