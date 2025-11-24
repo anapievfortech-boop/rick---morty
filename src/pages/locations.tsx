@@ -1,4 +1,4 @@
-import logoLocations from "../assets/rick-and-morty-locations.svg";
+import logoLocations from "../assets/rick-and-morty-locations.jpg";
 import LoadMore from "../components/load-button/load-more";
 import LocationCard from "../components/location/location-card";
 import axios from "axios";

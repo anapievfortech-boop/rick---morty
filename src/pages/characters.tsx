@@ -1,7 +1,7 @@
 import CharacterCard from "../components/character/character-card";
 import LoadMore from "../components/load-button/load-more";
 import { useState, type JSX } from "react";
-import Logo from "../assets/Rick-and-Morty-logo.svg";
+import Logo from "../assets/Rick-and-Morty-logo.jpg";
 import styles from "../components/character.module.css";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";

@@ -1,4 +1,4 @@
-import logoEpisodes from "../assets/rick-and-morty-episodes.svg";
+import logoEpisodes from "../assets/rick-and-morty-episodes.jpg";
 import EpisodesCard from "../components/episode/episode-card";
 import LoadMore from "../components/load-button/load-more";
 import axios from "axios";

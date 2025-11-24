@@ -1,4 +1,4 @@
-import headerLogo from "../assets/logo-black 1.svg";
+import headerLogo from "../assets/logo-black 1.jpg";
 import { Link } from "react-router-dom";
 
 export default function Header() {
