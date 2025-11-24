@@ -1,9 +1,66 @@
 import logoEpisodes from "../assets/rick-and-morty-episodes.svg";
-import { episodeData } from "../components/episode/episode-data";
 import EpisodesCard from "../components/episode/episode-card";
 import LoadMore from "../components/load-button/load-more";
+import axios from "axios";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useState } from "react";
+
+interface Episode {
+  id: number;
+  name: string;
+  air_date: string;
+  episode: string;
+  characters: Array<string>;
+}
+
+interface EpisodeFetchParams {
+  pageParam?: number;
+}
+
+async function episodeFetch({
+  pageParam = 1,
+}: EpisodeFetchParams): Promise<Episode[]> {
+  const { data } = await axios.get(
+    "https://rickandmortyapi.com/api/episode?page=" + pageParam,
+  );
+
+  return data.results;
+}
 
 export default function Episodes() {
+  const [searchEpisode, setSearchEpisdode] = useState("");
+
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["episode"],
+    queryFn: episodeFetch,
+    initialPageParam: 1,
+    getNextPageParam: (_, __, lastPageParam) => {
+      if (lastPageParam >= 3) return undefined;
+      return lastPageParam + 1;
+    },
+  });
+
+  const filteredSearchEpisode = data?.pages.map((page) =>
+    page.filter((episode) =>
+      episode.name.toLowerCase().includes(searchEpisode.toLowerCase()),
+    ),
+  ) || [];
+
+  if (isLoading) {
+    return <div>Идет загрузка, подождите!</div>;
+  }
+
+  if (isError) {
+    return <div>Произошла ошибка!</div>;
+  }
+
   return (
     <>
       <div className="wrapper episodes">
@@ -16,25 +73,30 @@ export default function Episodes() {
                 type="text"
                 className="form-input episodes-input"
                 placeholder="Filter by name or episode (ex. S01 or S01E02)"
+                value={searchEpisode}
+                onChange={(e) => setSearchEpisdode(e.target.value)}
               />
             </div>
           </form>
         </div>
         <ul className="episode-cards wrapper">
-          {episodeData.map((episode) => (
-            <EpisodesCard
-              key={episode.id}
-              id={episode.id}
-              name={episode.name}
-              air_date={episode.air_date}
-              episode={episode.episode}
-              characters={episode.character}
-              url={episode.url}
-              created={episode.created}
-            />
-          ))}
+          {filteredSearchEpisode.map((page) =>
+            page.map((episode: Episode) => (
+              <EpisodesCard
+                key={episode.id}
+                id={episode.id}
+                name={episode.name}
+                air_date={episode.air_date}
+                episode={episode.episode}
+                characters={episode.characters}
+              />
+            )),
+          )}
         </ul>
-        <LoadMore />
+        <LoadMore
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+        />
       </div>
     </>
   );

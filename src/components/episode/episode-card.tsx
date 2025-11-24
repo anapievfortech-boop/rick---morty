@@ -2,17 +2,15 @@ import type { FC } from "react";
 import { Link } from "react-router-dom";
 import styles from "./episode-card.module.css";
 
-interface IProps {
-  id?: number;
-  name?: string;
-  air_date?: string;
-  episode?: string;
-  characters?: string[];
-  url?: string;
-  created?: string;
+interface Episode {
+  id: number;
+  name: string;
+  air_date: string;
+  episode: string;
+  characters: Array<string>;
 }
 
-const EpisodesCard: FC<IProps> = ({ id, name, air_date, episode }) => {
+const EpisodesCard: FC<Episode> = ({ id, name, air_date, episode }) => {
   return (
     <Link to={`/episodes/${id}`}>
       <li className={styles["episode-card"]}>

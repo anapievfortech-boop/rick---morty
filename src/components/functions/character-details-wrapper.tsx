@@ -1,6 +1,7 @@
 import CharDetails from "../character/character-detail";
-import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 interface Character {
   id: number;
@@ -9,51 +10,38 @@ interface Character {
   species: string;
   gender: string;
   status: string;
-  origin: {name: string, url: string};
+  origin: { name: string; url: string };
   type: string;
-  location: {name: string, url: string};
-  episode: any;
-  url: string;
-  created: string;
+  location: { name: string; url: string };
+  episode: string[];
+}
+
+async function characterFetch(id: string | undefined): Promise<Character> {
+  if (!id) {
+    throw new Error("Character ID is undefined");
+  }
+
+  const { data } = await axios.get<Character>(
+    `https://rickandmortyapi.com/api/character/${id}`,
+  );
+
+  return data;
 }
 
 const CharacterDetailsWrapper = () => {
-  const { id } = useParams<{id: string}>();
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { id } = useParams<{ id: string }>();
+  const { data: character, isLoading, isError } = useQuery({
+    queryKey: ["character", id],
+    queryFn: () => characterFetch(id),
+  });
 
-  useEffect(() => {
-    const characterGet = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `https://rickandmortyapi.com/api/character/${id}`,
-        );
-        const data = await response.json();
-        setCharacter(data);
-      } catch (err: any) {
-        setError(err.message);
-        console.log("Ошибка", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    characterGet();
-  }, [id]);
-
-  if (loading) {
+  if (isLoading) {
     return <div>Идет загрузка, подождите!</div>;
   }
 
-  if (error) {
+  if (isError) {
     return <div>Произошла ошибка!</div>;
   }
-
-  // const character = characterData.find(
-  //   (character) => character.id === Number(id),
-  // );
 
   if (!character) {
     return <h2>Персонаж не найден!</h2>;
@@ -70,6 +58,7 @@ const CharacterDetailsWrapper = () => {
       origin={character.origin}
       type={character.type}
       location={character.location}
+      episode={character.episode}
     />
   );
 };

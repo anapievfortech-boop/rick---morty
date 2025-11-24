@@ -5,18 +5,20 @@
   border-radius: 4px;
   background-color: #fafafa;
   box-shadow: var(--shadow-down);
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
+  flex-direction: column;
   padding: 38px 16px;
   align-items: center;
   justify-content: center;
 }
 
 .location-name {
-  font-family: "Roboto", sans-serif;
-  font-size: 20px;
+  font-family: "Roboto-Regular", sans-serif;
+  font-size: 15px;
   line-height: 30px;
   letter-spacing: 0.15px;
   margin: 0;
+  text-align: center;
 }
 
 .location-type {

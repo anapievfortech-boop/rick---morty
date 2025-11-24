@@ -1,9 +1,10 @@
 import CharacterCard from "../components/character/character-card";
 import LoadMore from "../components/load-button/load-more";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 import Logo from "../assets/Rick-and-Morty-logo.svg";
 import styles from "../components/character.module.css";
-import { useState, useEffect } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import axios from "axios";
 // import AdvancedFilter from "../components/mobile-components/advanced-filter";
 
 interface Character {
@@ -11,44 +12,62 @@ interface Character {
   image: string;
   name: string;
   species: string;
-  gender?: string;
-  status?: string;
-  origin?: object;
-  type?: string;
-  location?: object;
-  episode?: any;
-  url?: string;
-  created?: string;
+  gender: string;
+  status: string;
+  origin: object;
+  type: string;
+  location: object;
+  episode: any;
+  url: string;
+  created: string;
+}
+
+interface CharacterFetchParams {
+  pageParam?: number;
+}
+
+async function characterFetch({
+  pageParam = 1,
+}: CharacterFetchParams): Promise<Character[]> {
+  const { data } = await axios.get(
+    "https://rickandmortyapi.com/api/character/?page=" + pageParam,
+  );
+
+  return data.results;
 }
 
 export default function Characters(): JSX.Element {
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [searchCharacter, setSearchCharacter] = useState("");
 
-  useEffect(() => {
-    const Characterloading = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("https://rickandmortyapi.com/api/character");
-        const data = await response.json();
-        setCharacters(data.results || [])
-      } catch (err: any) {
-        setError(err.message);
-        console.log("Ошибка", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["character"],
+    queryFn: characterFetch,
+    initialPageParam: 1,
+    getNextPageParam: (_, __, lastPageParam) => {
+      if (lastPageParam >= 42) return undefined;
+      return lastPageParam + 1;
+    },
+  });
 
-    Characterloading();
-  }, []);
+  const filteredSearchCharacter =
+    data?.pages.map((page) =>
+      page.filter((character) =>
+        character.name.toLowerCase().includes(searchCharacter.toLowerCase()),
+      ),
+    ) || [];
 
-  if (loading) {
+  if (isLoading) {
     return <div>Идет загрузка, подождите!</div>;
   }
 
-  if (error) {
+  if (isError) {
     return <div>Произошла ошибка!</div>;
   }
 
@@ -64,6 +83,8 @@ export default function Characters(): JSX.Element {
                 className={styles["form-input"]}
                 type="text"
                 placeholder="Filter by name..."
+                value={searchCharacter}
+                onChange={(e) => setSearchCharacter(e.target.value)}
               />
             </div>
             {/* <AdvancedFilter /> */}
@@ -90,18 +111,23 @@ export default function Characters(): JSX.Element {
             </select>
           </form>
           <ul className={styles["character-list"]}>
-            {characters.map((character) => (
-              <CharacterCard
-                key={character.id}
-                id={character.id}
-                name={character.name}
-                image={character.image}
-                species={character.species}
-              />
-            ))}
+            {filteredSearchCharacter.map((page) =>
+              page.map((character: Character) => (
+                <CharacterCard
+                  key={character.id}
+                  id={character.id}
+                  name={character.name}
+                  image={character.image}
+                  species={character.species}
+                />
+              )),
+            )}
           </ul>
         </div>
-        <LoadMore />
+        <LoadMore
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+        />
       </div>
     </>
   );

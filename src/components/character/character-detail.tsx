@@ -4,24 +4,65 @@ import arroBack from "../../assets/arrow_back_24px.svg";
 import { Link } from "react-router-dom";
 import InformationListItem from "./information-list";
 import EpisodesList from "./episodes-list";
-import { episodeData } from "../episode/episode-data";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
-interface IProps {
+interface Character {
   id: number;
   image: string;
   name: string;
   species: string;
   gender: string;
   status: string;
-  origin: {name: string, url: string};
+  origin: { name: string; url: string };
   type: string;
-  location: {name: string, url: string};
-  episode?: any;
-  url?: string;
-  created?: string;
+  location: { name: string; url: string };
+  episode: Array<string>;
 }
 
-const CharDetails: FC<IProps> = ({ name, image, id, species, status, gender, type, location, origin }) => {
+interface Episode {
+  id: number;
+  name: string;
+  air_date: string;
+  episode: string;
+  characters: Array<string>;
+}
+
+async function detailsEpisodeFetch(episodeUrl: string[]): Promise<Episode[]> {
+  const request = episodeUrl.map((url) => axios.get<Episode>(url));
+  const response = await Promise.all(request);
+  return response.map((response) => response.data);
+}
+
+const CharDetails: FC<Character> = ({
+  name,
+  image,
+  id,
+  species,
+  status,
+  gender,
+  type,
+  location,
+  origin,
+  episode,
+}) => {
+  const {
+    data: episodeList,
+    isLoading,
+    isError,
+  } = useQuery<Episode[]>({
+    queryKey: ["episodeList", id],
+    queryFn: () => detailsEpisodeFetch(episode),
+  });
+
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
+
+  if (isError) {
+    return <div>Произошла ошибка!</div>;
+  }
+
   return (
     <>
       <div className="wrapper">
@@ -45,27 +86,28 @@ const CharDetails: FC<IProps> = ({ name, image, id, species, status, gender, typ
           <div className="information">
             <h3 className="Heading">Information</h3>
             <ul className="details-list">
-                <InformationListItem
-                  key={id}
-                  species={species}
-                  gender={gender}
-                  status={status}
-                  origin={origin}
-                  type={type}
-                  location={location}
-                />
+              <InformationListItem
+                key={id}
+                species={species}
+                gender={gender}
+                status={status}
+                origin={origin}
+                type={type}
+                location={location}
+              />
             </ul>
           </div>
           <div className="episodes">
             <h3 className="Heading">Episodes</h3>
             <ul className="details-list-episodes">
-              {episodeData.slice(0, 4).map((IProps) => (
+              {episodeList?.slice(0, 4).map((episodeItem: Episode) => (
                 <EpisodesList
-                  key={IProps.id}
-                  id={IProps.id}
-                  episode={IProps.episode}
-                  name={IProps.name}
-                  air_date={IProps.air_date}
+                  key={episodeItem.id}
+                  id={episodeItem.id}
+                  episode={episodeItem.episode}
+                  name={episodeItem.name}
+                  air_date={episodeItem.air_date}
+                  characters={episodeItem.characters}
                 />
               ))}
             </ul>

@@ -2,19 +2,62 @@ import type { FC } from "react";
 import { Link } from "react-router-dom";
 import arroBack from "../../assets/arrow_back_24px.svg";
 import CharacterCard from "../character/character-card";
-import { characterData } from "../character/character-data";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
-interface IProps {
-  id?: number;
-  name?: string;
-  air_date?: string;
-  episode?: string;
-  characters?: string[];
+interface Episode {
+  id: number;
+  name: string;
+  air_date: string;
+  episode: string;
+  characters: Array<string>;
+}
+
+interface Character {
+  id: number;
+  image: string;
+  name: string;
+  species: string;
+  gender?: string;
+  status?: string;
+  origin?: object;
+  type?: string;
+  location?: object;
+  episode?: any;
   url?: string;
   created?: string;
 }
 
-const EpisodeDetails: FC<IProps> = ({ name, air_date, episode }) => {
+async function residentFetch(residentUrls: string[]): Promise<Character[]> {
+  const requests = residentUrls.map((url) => axios.get<Character>(url));
+  const responses = await Promise.all(requests);
+  return responses.map((response) => response.data);
+}
+
+const EpisodeDetails: FC<Episode> = ({
+  id,
+  name,
+  air_date,
+  episode,
+  characters,
+}) => {
+  const {
+    data: residentList,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["episodeResidents", id || episode],
+    queryFn: () => residentFetch(characters),
+  });
+
+  if (isLoading) {
+    return <div>Идет загрузка, подождите!</div>;
+  }
+
+  if (isError) {
+    return <div>Произошла ошибка!</div>;
+  }
+
   return (
     <>
       <div className="top-details wrapper">
@@ -45,12 +88,12 @@ const EpisodeDetails: FC<IProps> = ({ name, air_date, episode }) => {
       <div className="wrapper">
         <h3 className="Heading">Cast</h3>
         <ul className="character-list">
-          {characterData.map((character) => (
+          {residentList?.map((character: Character) => (
             <CharacterCard
               key={character.id}
               id={character.id}
               name={character.name}
-              img={character.img}
+              image={character.image}
               species={character.species}
             />
           ))}

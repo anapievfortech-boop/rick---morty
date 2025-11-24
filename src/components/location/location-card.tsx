@@ -2,14 +2,15 @@ import type { FC } from "react";
 import styles from "./location-card.module.css";
 import { Link } from "react-router-dom";
 
-interface IProps {
-  id?: number;
-  name?: string;
-  dimension?: string;
-  type?: string;
+interface Location {
+  id: number;
+  name: string;
+  dimension: string;
+  type: string;
+  residents?: Array<string>;
 }
 
-const LocationCard: FC<IProps> = ({ id, name, dimension, type }) => {
+const LocationCard: FC<Location> = ({ id, name, dimension, type }) => {
   return (
     <>
       <Link to={`/location/${id}`}>

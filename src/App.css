@@ -198,6 +198,14 @@ ul {
   margin-right: auto;
 }
 
+.location-character-cards {
+  flex-direction: column;
+}
+
+.character-list {
+  margin-right: auto;
+}
+
 .list-item {
   display: flex;
   flex-direction: column;
@@ -242,9 +250,9 @@ ul {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin-left: auto;
   margin: none;
   margin-bottom: auto;
+  margin-right: auto;
 }
 
 .list-item-episodes {
@@ -258,8 +266,8 @@ ul {
   padding: 10px 16px;
 }
 
-.list-item-episodes:last-child {
-  margin-bottom: 68px;
+.details-list-episodes:last-child {
+  margin-bottom: 50px;
 }
 
 .list-item-episodes:hover {
@@ -360,14 +368,14 @@ ul {
   border: none;
   border-radius: 4px;
   padding: 20px 32px;
-  background-color: #E3F2FD;
+  background-color: #e3f2fd;
   box-shadow: var(--shadow-down);
   text-transform: uppercase;
   font-family: "Roboto-Regular", sans-serif;
   font-size: 14px;
   line-height: 16px;
   letter-spacing: 1.25;
-  color: #2196F3;
+  color: #2196f3;
 }
 
 @media (max-width: 800px) {
