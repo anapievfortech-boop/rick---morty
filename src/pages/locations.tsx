@@ -1,34 +1,16 @@
 import logoLocations from "../assets/rick-and-morty-locations.jpg";
 import LoadMore from "../components/load-button/load-more";
 import LocationCard from "../components/location/location-card";
-import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
-
-interface Location {
-  id: number;
-  name: string;
-  dimension: string;
-  type: string;
-  residents: Array<string>;
-}
-
-interface LocationFetchParams {
-  pageParam?: number;
-}
-
-async function locationFetch({
-  pageParam = 1,
-}: LocationFetchParams): Promise<Location[]> {
-  const { data } = await axios.get(
-    "https://rickandmortyapi.com/api/location?page=" + pageParam,
-  );
-
-  return data.results;
-}
+import type { Location } from "../types";
+import { locationFetch } from "../api";
+import Select from "../components/select-option";
+import { selectOptions } from "../data/select-options";
 
 export default function Locations() {
   const [searchLocation, setSearchLocation] = useState("");
+  const [selectType, setSelectType] = useState("");
 
   const {
     data,
@@ -47,13 +29,14 @@ export default function Locations() {
     },
   });
 
-  const filteredSearchLocation = data?.pages.map((page) =>
-    page.filter((location) =>
-      location.name
-        .toLowerCase()
-        .includes(searchLocation.toLocaleLowerCase()),
-    ),
-  ) || [];
+  const filteredSearchLocation =
+    data?.pages.flatMap((page) =>
+      page.filter(
+        (location) =>
+          location.name.toLowerCase().includes(searchLocation.toLowerCase()) &&
+          location.type.toLowerCase().includes(selectType.toLowerCase()),
+      ),
+    ) || [];
 
   if (isLoading) {
     return <div>Идет загрузка, подождите!</div>;
@@ -82,26 +65,35 @@ export default function Locations() {
               onChange={(e) => setSearchLocation(e.target.value)}
             />
           </div>
-          <select className="form-select hide-on-mobile" name="Type" id="">
-            <option value="Type">Type</option>
-          </select>
-          <select className="form-select hide-on-mobile" name="Dimension" id="">
-            <option value="Dimension">Dimension</option>
-          </select>
+          <Select
+            className="form-select hide-on-mobile"
+            name="Type"
+            id=""
+            value={selectType}
+            onChange={setSelectType}
+            options={selectOptions.type}
+          />
+          <Select
+            className="form-select hide-on-mobile"
+            name="Type"
+            id=""
+            value={selectType}
+            onChange={setSelectType}
+            options={selectOptions.type}
+          />
         </form>
       </div>
       <ul className="locations-cards wrapper">
-        {filteredSearchLocation.map((page) =>
-          page.map((location: Location) => (
-            <LocationCard
-              key={location.id}
-              id={location.id}
-              name={location.name}
-              dimension={location.dimension}
-              type={location.type}
-            />
-          )),
-        )}
+        {filteredSearchLocation.map((location: Location) => (
+          <LocationCard
+            key={location.id}
+            id={location.id}
+            name={location.name}
+            dimension={location.dimension}
+            type={location.type}
+            residents={location.residents}
+          />
+        ))}
       </ul>
       <LoadMore
         onClick={() => fetchNextPage()}

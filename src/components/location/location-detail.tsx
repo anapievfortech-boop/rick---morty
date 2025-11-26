@@ -2,37 +2,9 @@ import type { FC } from "react";
 import { Link } from "react-router-dom";
 import arroBack from "../../assets/arrow_back_24px.svg";
 import CharacterCard from "../character/character-card";
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-
-interface Location {
-  id: number;
-  name: string;
-  dimension: string;
-  type: string;
-  residents: Array<string>;
-}
-
-interface Character {
-  id: number;
-  image: string;
-  name: string;
-  species: string;
-  gender?: string;
-  status?: string;
-  origin?: { name: string; url: string };
-  type?: string;
-  location?: { name: string; url: string };
-  episode?: any;
-  url?: string;
-  created?: string;
-}
-
-async function residentFetch(residentUrls: string[]): Promise<Character[]> {
-  const requests = residentUrls.map((url) => axios.get<Character>(url));
-  const responses = await Promise.all(requests);
-  return responses.map((response) => response.data);
-}
+import type { Character, Location } from "../../types";
+import { residentFetch } from "../../api";
 
 const LocationDetails: FC<Location> = ({
   id,
@@ -51,7 +23,11 @@ const LocationDetails: FC<Location> = ({
   });
 
   if (isLoading) {
-    return <div>Идет загрузка, подождите!</div>;
+    return (
+      <div className="card-details-alert">
+        Идет загрузка локации, подождите!
+      </div>
+    );
   }
 
   if (isError) {
@@ -89,15 +65,27 @@ const LocationDetails: FC<Location> = ({
       <div className="wrapper location-character-cards">
         <h3 className="Heading">Residents</h3>
         <ul className="character-list">
-          {residentList?.map((character: Character) => (
-            <CharacterCard
-              key={character.id}
-              id={character.id}
-              name={character.name}
-              image={character.image}
-              species={character.species}
-            />
-          ))}
+          {residentList?.length !== 0 ? (
+            residentList?.map((character: Character) => (
+              <CharacterCard
+                key={character.id}
+                id={character.id}
+                name={character.name}
+                image={character.image}
+                species={character.species}
+                gender={character.gender}
+                status={character.status}
+                origin={character.origin}
+                type={character.type}
+                location={character.location}
+                episode={character.episode}
+              />
+            ))
+          ) : (
+            <li className="card-list-empty-alert">
+              The character is not found.
+            </li>
+          )}
         </ul>
       </div>
     </>

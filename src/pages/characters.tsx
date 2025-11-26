@@ -4,40 +4,18 @@ import { useState, type JSX } from "react";
 import Logo from "../assets/Rick-and-Morty-logo.jpg";
 import styles from "../components/character.module.css";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import axios from "axios";
-// import AdvancedFilter from "../components/mobile-components/advanced-filter";
-
-interface Character {
-  id: number;
-  image: string;
-  name: string;
-  species: string;
-  gender: string;
-  status: string;
-  origin: object;
-  type: string;
-  location: object;
-  episode: any;
-  url: string;
-  created: string;
-}
-
-interface CharacterFetchParams {
-  pageParam?: number;
-}
-
-async function characterFetch({
-  pageParam = 1,
-}: CharacterFetchParams): Promise<Character[]> {
-  const { data } = await axios.get(
-    "https://rickandmortyapi.com/api/character/?page=" + pageParam,
-  );
-
-  return data.results;
-}
+import AdvancedFilter from "../components/mobile-components/advanced-filter-charcter";
+import SelectFilter from "../components/character/select-filter";
+import type { Character } from "../types";
+import { characterFetch } from "../api";
+import { useMobile } from "../components/contexts/mobile-context";
 
 export default function Characters(): JSX.Element {
   const [searchCharacter, setSearchCharacter] = useState("");
+  const [selectGender, setSelectGender] = useState("");
+  const [selectStatus, setSelectStatus] = useState("");
+  const [selectSpecies, setSelectSpecies] = useState("");
+  const isMobile = useMobile()
 
   const {
     data,
@@ -57,14 +35,24 @@ export default function Characters(): JSX.Element {
   });
 
   const filteredSearchCharacter =
-    data?.pages.map((page) =>
-      page.filter((character) =>
-        character.name.toLowerCase().includes(searchCharacter.toLowerCase()),
+    data?.pages.flatMap((page) =>
+      page.filter(
+        (character) =>
+          character.name
+            .toLowerCase()
+            .includes(searchCharacter.toLowerCase()) &&
+          character.gender.toLowerCase().includes(selectGender.toLowerCase()) &&
+          character.status.toLowerCase().includes(selectStatus.toLowerCase()) &&
+          character.species.toLowerCase().includes(selectSpecies.toLowerCase()),
       ),
     ) || [];
 
   if (isLoading) {
-    return <div>Идет загрузка, подождите!</div>;
+    return (
+      <div className={styles["card-list-empty-alert"]}>
+        Идет загрузка, подождите!
+      </div>
+    );
   }
 
   if (isError) {
@@ -87,40 +75,47 @@ export default function Characters(): JSX.Element {
                 onChange={(e) => setSearchCharacter(e.target.value)}
               />
             </div>
-            {/* <AdvancedFilter /> */}
-            <select
-              className={`${styles["form-select"]} ${styles["hide-on-mobile"]}`}
-              name="Species"
-              id=""
-            >
-              <option value="Species">Species</option>
-            </select>
-            <select
-              className={`${styles["form-select"]} ${styles["hide-on-mobile"]}`}
-              name="Species"
-              id=""
-            >
-              <option value="Gender">Gender</option>
-            </select>
-            <select
-              className={`${styles["form-select"]} ${styles["hide-on-mobile"]}`}
-              name="Species"
-              id=""
-            >
-              <option value="Status">Status</option>
-            </select>
+            {!isMobile ? (
+              <SelectFilter
+                selectSpecies={selectSpecies}
+                selectGender={selectGender}
+                selectStatus={selectStatus}
+                setSelectSpecies={setSelectSpecies}
+                setSelectGender={setSelectGender}
+                setSelectStatus={setSelectStatus}
+              />
+            ) : (
+              <AdvancedFilter
+                selectSpecies={selectSpecies}
+                selectGender={selectGender}
+                selectStatus={selectStatus}
+                setSelectSpecies={setSelectSpecies}
+                setSelectGender={setSelectGender}
+                setSelectStatus={setSelectStatus}
+              />
+            )}
           </form>
           <ul className={styles["character-list"]}>
-            {filteredSearchCharacter.map((page) =>
-              page.map((character: Character) => (
+            {filteredSearchCharacter.length > 0 ? (
+              filteredSearchCharacter.map((character: Character) => (
                 <CharacterCard
                   key={character.id}
                   id={character.id}
                   name={character.name}
                   image={character.image}
                   species={character.species}
+                  gender={character.gender}
+                  status={character.status}
+                  origin={character.origin}
+                  type={character.type}
+                  location={character.location}
+                  episode={character.episode}
                 />
-              )),
+              ))
+            ) : (
+              <li className={styles["card-list-empty-alert"]}>
+                The character is not found. Try to load more!
+              </li>
             )}
           </ul>
         </div>

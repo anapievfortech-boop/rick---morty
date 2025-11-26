@@ -2,14 +2,8 @@ import axios from "axios";
 import EpisodeDetails from "../episode/episode-detail";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import type { Episode } from "../../types";
 
-interface Episode {
-  id: number;
-  name: string;
-  air_date: string;
-  episode: string;
-  characters: Array<string>;
-}
 
 async function episodeFetch(id: string | undefined) {
   const { data } = await axios.get<Episode>(
@@ -31,7 +25,7 @@ const EpisodeDetailsWrapper = () => {
   });
 
   if (isLoading) {
-    return <div>Идет загрузка, подождите!</div>;
+    return <div className="card-details-alert">Идет загрузка, подождите!</div>;
   }
 
   if (isError) {

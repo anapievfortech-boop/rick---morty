@@ -1,15 +1,8 @@
 import { type FC } from "react";
 import { Link } from "react-router-dom";
+import type { Episode } from "../../types";
 
-interface IProps {
-  id: number;
-  name: string;
-  air_date: string;
-  episode: string;
-  characters: Array<string>;
-}
-
-const EpisodesList: FC<IProps> = ({ id, name, air_date, episode }) => {
+const EpisodesList: FC<Episode> = ({ id, name, air_date, episode }) => {
   return (
     <>
       <Link to={`/episodes/${id}`}>

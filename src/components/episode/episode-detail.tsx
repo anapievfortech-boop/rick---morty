@@ -2,37 +2,9 @@ import type { FC } from "react";
 import { Link } from "react-router-dom";
 import arroBack from "../../assets/arrow_back_24px.svg";
 import CharacterCard from "../character/character-card";
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-
-interface Episode {
-  id: number;
-  name: string;
-  air_date: string;
-  episode: string;
-  characters: Array<string>;
-}
-
-interface Character {
-  id: number;
-  image: string;
-  name: string;
-  species: string;
-  gender?: string;
-  status?: string;
-  origin?: object;
-  type?: string;
-  location?: object;
-  episode?: any;
-  url?: string;
-  created?: string;
-}
-
-async function residentFetch(residentUrls: string[]): Promise<Character[]> {
-  const requests = residentUrls.map((url) => axios.get<Character>(url));
-  const responses = await Promise.all(requests);
-  return responses.map((response) => response.data);
-}
+import type { Episode, Character } from "../../types";
+import { residentFetch } from "../../api";
 
 const EpisodeDetails: FC<Episode> = ({
   id,
@@ -51,7 +23,11 @@ const EpisodeDetails: FC<Episode> = ({
   });
 
   if (isLoading) {
-    return <div>Идет загрузка, подождите!</div>;
+    return (
+      <div className="card-details-alert">
+        Идет загрузка эпизода, подождите!
+      </div>
+    );
   }
 
   if (isError) {
@@ -87,7 +63,7 @@ const EpisodeDetails: FC<Episode> = ({
       </div>
       <div className="wrapper">
         <h3 className="Heading">Cast</h3>
-        <ul className="character-list">
+        <div className="character-list">
           {residentList?.map((character: Character) => (
             <CharacterCard
               key={character.id}
@@ -95,9 +71,15 @@ const EpisodeDetails: FC<Episode> = ({
               name={character.name}
               image={character.image}
               species={character.species}
+              gender={character.gender}
+              status={character.status}
+              origin={character.origin}
+              type={character.type}
+              location={character.location}
+              episode={character.episode}
             />
           ))}
-        </ul>
+        </div>
       </div>
     </>
   );

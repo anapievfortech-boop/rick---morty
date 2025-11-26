@@ -1,15 +1,8 @@
 import { type FC } from "react";
+import type { Character } from "../../types";
 
-interface IProps {
-  species: string;
-  gender: string;
-  status: string;
-  origin: { name: string; url: string };
-  location: { name: string; url: string };
-  type: string;
-}
 
-const InformationListItem: FC<IProps> = ({
+const InformationListItem: FC<Character> = ({
   species,
   gender,
   status,

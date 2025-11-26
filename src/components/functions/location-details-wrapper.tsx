@@ -2,14 +2,7 @@ import axios from "axios";
 import LocationDetails from "../location/location-detail";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
-interface Location {
-  id: number;
-  name: string;
-  dimension: string;
-  type: string;
-  residents: Array<string>;
-}
+import type { Location } from "../../types";
 
 async function locationFetch(id: string | undefined) {
   const { data } = await axios.get<Location>(`https://rickandmortyapi.com/api/location/${id}`);
@@ -25,7 +18,7 @@ const LocationDetailsWrapper = () => {
   });
 
     if (isLoading) {
-    return <div>Идет загрузка, подождите!</div>;
+    return <div className="card-details-alert">Идет загрузка, подождите!</div>;
   }
 
   if (isError) {

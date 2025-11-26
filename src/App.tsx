@@ -1,21 +1,18 @@
-import "./App.css";
+// import "./App.css";
 import Header from "./components/header";
 import Characters from "./pages/characters";
 import Locations from "./pages/locations";
 import Episodes from "./pages/episodes";
 import Footer from "./components/footer";
 import { Routes, Route } from "react-router-dom";
-import CharacterDetailsWrapper from "./components/functions/character-details-wrapper";
+// import CharacterDetailsWrapper from "./components/functions/character-details-wrapper";
 import EpisodeDetailsWrapper from "./components/functions/episode-details-wrapper";
 import LocationDetailsWrapper from "./components/functions/location-details-wrapper";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-
-const qieryClient = new QueryClient();
+import CharDetails from "./components/character/character-detail";
 
 function App() {
   return (
     <>
-    <QueryClientProvider client={qieryClient}>
       <Header />
       <main>
         <Routes>
@@ -29,11 +26,10 @@ function App() {
 
           <Route path="/episodes/:id" element={<EpisodeDetailsWrapper />} />
 
-          <Route path="/character/:id" element={<CharacterDetailsWrapper />} />
+          <Route path="/character/:id" element={<CharDetails />} />
         </Routes>
       </main>
       <Footer />
-      </QueryClientProvider>
     </>
   );
 }

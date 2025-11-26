@@ -1,31 +1,10 @@
 import logoEpisodes from "../assets/rick-and-morty-episodes.jpg";
 import EpisodesCard from "../components/episode/episode-card";
 import LoadMore from "../components/load-button/load-more";
-import axios from "axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
-
-interface Episode {
-  id: number;
-  name: string;
-  air_date: string;
-  episode: string;
-  characters: Array<string>;
-}
-
-interface EpisodeFetchParams {
-  pageParam?: number;
-}
-
-async function episodeFetch({
-  pageParam = 1,
-}: EpisodeFetchParams): Promise<Episode[]> {
-  const { data } = await axios.get(
-    "https://rickandmortyapi.com/api/episode?page=" + pageParam,
-  );
-
-  return data.results;
-}
+import type { Episode } from "../types";
+import { episodeFetch } from "../api";
 
 export default function Episodes() {
   const [searchEpisode, setSearchEpisdode] = useState("");
@@ -42,16 +21,17 @@ export default function Episodes() {
     queryFn: episodeFetch,
     initialPageParam: 1,
     getNextPageParam: (_, __, lastPageParam) => {
-      if (lastPageParam >= 3) return undefined;
+      if (lastPageParam >= 3) return;
       return lastPageParam + 1;
     },
   });
 
-  const filteredSearchEpisode = data?.pages.map((page) =>
-    page.filter((episode) =>
-      episode.name.toLowerCase().includes(searchEpisode.toLowerCase()),
-    ),
-  ) || [];
+  const filteredSearchEpisode =
+    data?.pages.map((page) =>
+      page.filter((episode) =>
+        episode.name.toLowerCase().includes(searchEpisode.toLowerCase()),
+      ),
+    ) || [];
 
   if (isLoading) {
     return <div>Идет загрузка, подождите!</div>;
