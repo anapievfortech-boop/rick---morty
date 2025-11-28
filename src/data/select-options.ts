@@ -45,5 +45,9 @@ export const selectOptions: SelectConfig = {
     { value: "Arcade", label: "Arcade" },
     { value: "Spa", label: "Spa" },
   ],
-  dimention: [{ value: "", label: "Dimention" }],
+  dimension: [
+    { value: "", label: "Dimension" },
+    { value: "Unknown", label: "Unknown" },
+    { value: "Dimension C-137", label: "Dimension C-137" },
+  ],
 };

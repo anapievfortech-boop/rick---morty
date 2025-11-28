@@ -175,10 +175,6 @@ ul {
   justify-content: center;
 }
 
-/* .link-back {
-    margin-left: 233px;
-} */
-
 .go-back-button {
   display: flex;
   flex-direction: row;
@@ -248,7 +244,7 @@ ul {
 
 .character-list {
   margin-right: auto;
-  min-height:  50vh;
+  min-height: 50vh;
 }
 
 .list-item {
@@ -439,7 +435,7 @@ ul {
     min-width: 500px;
   }
 
-    .character-card {
+  .character-card {
     width: 312px;
     height: 308px;
   }
@@ -461,7 +457,8 @@ ul {
     width: 100%;
   }
 
-  .character-list, .bottom-details {
+  .character-list,
+  .bottom-details {
     min-height: 100vh;
     margin-left: auto;
   }

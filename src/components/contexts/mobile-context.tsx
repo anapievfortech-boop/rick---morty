@@ -28,9 +28,7 @@ export const MobileProvider = ({ children }: MobileProviderProps) => {
   }, []);
 
   return (
-    <MobileContext.Provider value={isMobile}>
-      {children}
-    </MobileContext.Provider>
+    <MobileContext.Provider value={isMobile}>{children}</MobileContext.Provider>
   );
 };
 

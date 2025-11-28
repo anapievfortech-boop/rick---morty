@@ -1,14 +1,12 @@
-// import "./App.css";
 import Header from "./components/header";
 import Characters from "./pages/characters";
 import Locations from "./pages/locations";
 import Episodes from "./pages/episodes";
 import Footer from "./components/footer";
 import { Routes, Route } from "react-router-dom";
-// import CharacterDetailsWrapper from "./components/functions/character-details-wrapper";
-import EpisodeDetailsWrapper from "./components/functions/episode-details-wrapper";
-import LocationDetailsWrapper from "./components/functions/location-details-wrapper";
 import CharDetails from "./components/character/character-detail";
+import EpisodeDetails from "./components/episode/episode-detail";
+import LocationDetails from "./components/location/location-detail";
 
 function App() {
   return (
@@ -22,9 +20,9 @@ function App() {
 
           <Route path="/episodes" element={<Episodes />} />
 
-          <Route path="/location/:id" element={<LocationDetailsWrapper />} />
+          <Route path="/location/:id" element={<LocationDetails />} />
 
-          <Route path="/episodes/:id" element={<EpisodeDetailsWrapper />} />
+          <Route path="/episodes/:id" element={<EpisodeDetails />} />
 
           <Route path="/character/:id" element={<CharDetails />} />
         </Routes>

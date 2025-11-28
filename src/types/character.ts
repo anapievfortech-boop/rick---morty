@@ -24,3 +24,22 @@ export interface FilterSelectProps {
   setSelectStatus: (value: string) => void;
   setSelectSpecies: (value: string) => void;
 }
+
+export interface CharacterFilters {
+  searchCharacter: string;
+  selectGender: string;
+  selectStatus: string;
+  selectSpecies: string;
+}
+export interface CharacterState {
+  characters: Character[];
+}
+
+export interface CharactersState {
+  data: Character[];
+  filters: CharacterFilters;
+  currentPage: number;
+  isLoading: boolean;
+  isError: boolean;
+  hasNextPage: boolean;
+}

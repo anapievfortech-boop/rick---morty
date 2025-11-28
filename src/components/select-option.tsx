@@ -8,22 +8,20 @@ const Select: FC<SelectProps> = ({
   className,
   name,
   id,
-}) => {
-  return (
-    <select
-      className={className}
-      name={name}
-      id={id}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  );
-};
+}) => (
+  <select
+    className={className}
+    name={name}
+    id={id}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+  >
+    {options.map((option) => (
+      <option key={option.value} value={option.value}>
+        {option.label}
+      </option>
+    ))}
+  </select>
+);
 
 export default Select;

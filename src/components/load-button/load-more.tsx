@@ -5,6 +5,15 @@ interface LoadMoreProps {
   disabled?: boolean;
 }
 
-export default function LoadMore({ onClick, disabled = false }: LoadMoreProps) {
-  return <button className={style["load-button"]} onClick={onClick} disabled={disabled}>LOAD MORE</button>;
-}
+const LoadMore = ({ onClick, disabled = false }: LoadMoreProps) => (
+  <button
+    className={style["load-button"]}
+    onClick={onClick}
+    disabled={disabled}
+    type="button"
+  >
+    LOAD MORE
+  </button>
+);
+
+export default LoadMore;

@@ -1,20 +1,18 @@
 import { useState } from "react";
-import type { FilterSelectProps } from "../../types";
-import SelectFilterCharacter from "../character/select-filter-character";
+import SelectFilterLocation from "../location/select-filter-location";
+import type { LocationFilterSelectProps } from "../../types";
 import styles from "../character.module.css";
 
-interface ModalFilterProps extends FilterSelectProps {
+interface ModalFilterLocationProps extends LocationFilterSelectProps {
   onClick?: () => void;
 }
 
-const AdvencedFilter = ({
-  selectSpecies,
-  selectGender,
-  selectStatus,
-  setSelectGender,
-  setSelectStatus,
-  setSelectSpecies,
-}: ModalFilterProps) => {
+const AdvencedFilterLocation = ({
+  selectType,
+  selectDimension,
+  setSelectType,
+  setSelectDimension,
+}: ModalFilterLocationProps) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleOnClick = () => setShowModal(!showModal);
@@ -24,7 +22,7 @@ const AdvencedFilter = ({
       <button
         type="button"
         className="advenced-filter-button"
-        onClick={handleOnClick}
+        onClick={() => setShowModal(!showModal)}
       >
         advensed filter
       </button>
@@ -32,13 +30,11 @@ const AdvencedFilter = ({
         <div className={styles["modal-overlay"]}>
           <div className={styles["modal-window"]}>
             <h2 className={styles["modal-window-header"]}>Filters</h2>
-            <SelectFilterCharacter
-              selectGender={selectGender}
-              selectSpecies={selectSpecies}
-              selectStatus={selectStatus}
-              setSelectGender={setSelectGender}
-              setSelectSpecies={setSelectSpecies}
-              setSelectStatus={setSelectStatus}
+            <SelectFilterLocation
+              selectType={selectType}
+              selectDimension={selectDimension}
+              setSelectType={setSelectType}
+              setSelectDimension={setSelectDimension}
             />
             <button
               type="button"
@@ -54,4 +50,4 @@ const AdvencedFilter = ({
   );
 };
 
-export default AdvencedFilter;
+export default AdvencedFilterLocation;

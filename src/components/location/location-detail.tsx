@@ -2,25 +2,12 @@ import type { FC } from "react";
 import { Link } from "react-router-dom";
 import arroBack from "../../assets/arrow_back_24px.svg";
 import CharacterCard from "../character/character-card";
-import { useQuery } from "@tanstack/react-query";
-import type { Character, Location } from "../../types";
-import { residentFetch } from "../../api";
+import type { Character } from "../../types";
+import { useLocationDetailQuery } from "../../hooks/use-location-detail-query";
 
-const LocationDetails: FC<Location> = ({
-  id,
-  name,
-  dimension,
-  type,
-  residents,
-}) => {
-  const {
-    data: residentList,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["locationResidents", id],
-    queryFn: () => residentFetch(residents),
-  });
+const LocationDetails: FC = () => {
+  const { locationData, residentList, isError, isLoading } =
+    useLocationDetailQuery();
 
   if (isLoading) {
     return (
@@ -30,9 +17,11 @@ const LocationDetails: FC<Location> = ({
     );
   }
 
-  if (isError) {
+  if (isError || !locationData) {
     return <div>Произошла ошибка!</div>;
   }
+
+  const { name, dimension, type } = locationData!;
 
   return (
     <>

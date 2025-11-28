@@ -7,10 +7,23 @@ export interface Location {
 }
 
 export interface LocationFilterSelectProps {
-  searchSpeciesCharacter: string;
-  searchGenderCharacter: string;
-  searchStatusCharacter: string;
-  setSearchGenderCharacter: (value: string) => void;
-  setSearchStatusCharacter: (value: string) => void;
-  setSearchSpeciesCharacter: (value: string) => void;
+  selectType: string;
+  selectDimension: string;
+  setSelectType: (value: string) => void;
+  setSelectDimension: (value: string) => void;
+}
+
+export interface LocationFilters {
+  searchLocation: string;
+  selectType: string;
+  selectDimension: string;
+}
+
+export interface LocationState {
+  data: Location[];
+  filters: LocationFilters;
+  isLoading: boolean;
+  isError: boolean;
+  hasNextPage: boolean;
+  currentPage: number;
 }

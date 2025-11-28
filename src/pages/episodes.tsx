@@ -1,39 +1,64 @@
 import logoEpisodes from "../assets/rick-and-morty-episodes.jpg";
 import EpisodesCard from "../components/episode/episode-card";
 import LoadMore from "../components/load-button/load-more";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setFilters,
+  selectEpisodestate,
+  fetchEpisodesPage,
+} from "../store/episodes/episodes-slice";
+import type { AppDispatch } from "../store/store";
 import type { Episode } from "../types";
-import { episodeFetch } from "../api";
 
 export default function Episodes() {
-  const [searchEpisode, setSearchEpisdode] = useState("");
-
+  const dispatch = useDispatch<AppDispatch>();
   const {
-    data,
+    data: allEpisodes,
+    filters,
     isLoading,
     isError,
-    fetchNextPage,
     hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["episode"],
-    queryFn: episodeFetch,
-    initialPageParam: 1,
-    getNextPageParam: (_, __, lastPageParam) => {
-      if (lastPageParam >= 3) return;
-      return lastPageParam + 1;
-    },
-  });
+  } = useSelector(selectEpisodestate);
+  const [searchInput, setSearchInput] = useState(filters.searchEpisode);
+  const filteredSearchEpisode = useMemo(() => {
+    return allEpisodes.filter((episode) => {
+      const matchesName = episode.name
+        .toLowerCase()
+        .includes(filters.searchEpisode.toLowerCase());
+      const matchesEpisode = episode.episode
+        .toLowerCase()
+        .includes(filters.searchEpisode.toLowerCase());
+      return matchesName || matchesEpisode;
+    });
+  }, [filters, allEpisodes]);
 
-  const filteredSearchEpisode =
-    data?.pages.map((page) =>
-      page.filter((episode) =>
-        episode.name.toLowerCase().includes(searchEpisode.toLowerCase()),
-      ),
-    ) || [];
+  useEffect(() => {
+    if (allEpisodes.length === 0 && !isLoading && hasNextPage) {
+      dispatch(fetchEpisodesPage());
+    }
+  }, [dispatch]);
 
-  if (isLoading) {
+  const handleLoadMore = () => {
+    if (hasNextPage && !isLoading) {
+      dispatch(fetchEpisodesPage());
+    }
+  };
+
+  const handleFilterChange = (
+    filterName: keyof typeof filters,
+    value: string,
+  ) => {
+    dispatch(setFilters({ [filterName]: value }));
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    handleFilterChange("searchEpisode", value);
+  };
+
+  if (isLoading && allEpisodes.length === 0) {
     return <div>Идет загрузка, подождите!</div>;
   }
 
@@ -42,7 +67,6 @@ export default function Episodes() {
   }
 
   return (
-    <>
       <div className="wrapper episodes">
         <img src={logoEpisodes} alt="logo-episodes" className="logo-episodes" />
         <div className="form-list">
@@ -53,31 +77,28 @@ export default function Episodes() {
                 type="text"
                 className="form-input episodes-input"
                 placeholder="Filter by name or episode (ex. S01 or S01E02)"
-                value={searchEpisode}
-                onChange={(e) => setSearchEpisdode(e.target.value)}
+                value={searchInput}
+                onChange={handleSearchInputChange}
               />
             </div>
           </form>
         </div>
         <ul className="episode-cards wrapper">
-          {filteredSearchEpisode.map((page) =>
-            page.map((episode: Episode) => (
-              <EpisodesCard
-                key={episode.id}
-                id={episode.id}
-                name={episode.name}
-                air_date={episode.air_date}
-                episode={episode.episode}
-                characters={episode.characters}
-              />
-            )),
-          )}
+          {filteredSearchEpisode.map((episode: Episode) => (
+            <EpisodesCard
+              key={episode.id}
+              id={episode.id}
+              name={episode.name}
+              air_date={episode.air_date}
+              episode={episode.episode}
+              characters={episode.characters}
+            />
+          ))}
         </ul>
         <LoadMore
-          onClick={() => fetchNextPage()}
-          disabled={!hasNextPage || isFetchingNextPage}
+          onClick={handleLoadMore}
+          disabled={!hasNextPage || isLoading}
         />
       </div>
-    </>
   );
 }

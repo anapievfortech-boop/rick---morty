@@ -3,11 +3,10 @@ import styles from "./character-card.module.css";
 import { type FC } from "react";
 import { type Character } from "../../types";
 
-
 const CharacterCard: FC<Character> = ({ id, image, name, species }) => (
   <Link to={`/character/${id}`}>
     <div className={styles["character-card"]}>
-      <div>
+      <div className={styles["card-image-container"]}>
         <img className={styles["character-card-img"]} src={image} alt={name} />
       </div>
       <h3 className={styles["char-name"]}>{name}</h3>

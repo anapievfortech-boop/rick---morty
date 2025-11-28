@@ -2,25 +2,12 @@ import type { FC } from "react";
 import { Link } from "react-router-dom";
 import arroBack from "../../assets/arrow_back_24px.svg";
 import CharacterCard from "../character/character-card";
-import { useQuery } from "@tanstack/react-query";
-import type { Episode, Character } from "../../types";
-import { residentFetch } from "../../api";
+import type { Character } from "../../types";
+import { useEpisodeDetailQuery } from "../../hooks/use-episode-detail-query";
 
-const EpisodeDetails: FC<Episode> = ({
-  id,
-  name,
-  air_date,
-  episode,
-  characters,
-}) => {
-  const {
-    data: residentList,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["episodeResidents", id || episode],
-    queryFn: () => residentFetch(characters),
-  });
+const EpisodeDetails: FC = () => {
+  const { episodeData, residentList, isLoading, isError } =
+    useEpisodeDetailQuery();
 
   if (isLoading) {
     return (
@@ -33,6 +20,8 @@ const EpisodeDetails: FC<Episode> = ({
   if (isError) {
     return <div>Произошла ошибка!</div>;
   }
+
+  const { name, air_date, episode: episodeCode } = episodeData!;
 
   return (
     <>
@@ -54,7 +43,7 @@ const EpisodeDetails: FC<Episode> = ({
       <div className="location-description wrapper">
         <div className="type-description">
           <h3 className="location-type">Episode</h3>
-          <p className="location-description-low">{episode}</p>
+          <p className="location-description-low">{episodeCode}</p>
         </div>
         <div className="dimension-description">
           <h3 className="location-dimension">Date</h3>

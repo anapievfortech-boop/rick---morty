@@ -1,37 +1,14 @@
 import { type FC } from "react";
 import arroBack from "../../assets/arrow_back_24px.svg";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import InformationListItem from "./information-list";
 import EpisodesList from "./episodes-list";
-import { useQuery } from "@tanstack/react-query";
 import type { Episode } from "../../types";
-import { detailsEpisodeFetch, characterDetailFetch } from "../../api";
+import { useCharacterDetailQuery } from "../../hooks/use-character-detail-query";
 
 const CharDetails: FC = () => {
-  const { id } = useParams<{ id: string }>();
-
-  const {
-    data: character,
-    isLoading: isCharacterLoading,
-    isError: isCharacterError,
-  } = useQuery({
-    queryKey: ["character", id],
-    queryFn: () => characterDetailFetch(id),
-    enabled: !!id,
-  });
-
-  const {
-    data: episodeList,
-    isLoading: isEpisodesLoading,
-    isError: isEpisodesError,
-  } = useQuery<Episode[]>({
-    queryKey: ["episode-list", character?.id],
-    queryFn: () => detailsEpisodeFetch(character!.episode),
-    enabled: !!character && !!character.episode, // Условие ТОЛЬКО здесь
-  });
-
-  const isLoading = isCharacterLoading || isEpisodesLoading;
-  const isError = isCharacterError || isEpisodesError;
+  const { character, episodeList, isError, isLoading } =
+    useCharacterDetailQuery();
 
   if (isLoading) {
     return <div className="card-details-alert">Идет загрузка, подождите!</div>;

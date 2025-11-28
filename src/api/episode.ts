@@ -1,9 +1,7 @@
 import axios from "axios";
-import type { FetchParams, Episode } from "../types";
+import type { Episode } from "../types";
 
-export async function episodeFetch({
-  pageParam = 1,
-}: FetchParams): Promise<Episode[]> {
+export async function episodeFetch(pageParam: number = 1): Promise<Episode[]> {
   const { data } = await axios.get(
     "https://rickandmortyapi.com/api/episode?page=" + pageParam,
   );
@@ -11,7 +9,9 @@ export async function episodeFetch({
   return data.results;
 }
 
-export async function detailsEpisodeFetch(episodeUrl: string[]): Promise<Episode[]> {
+export async function detailsEpisodeFetch(
+  episodeUrl: string[],
+): Promise<Episode[]> {
   const request = episodeUrl.map((url) => axios.get<Episode>(url));
   const response = await Promise.all(request);
   return response.map((response) => response.data);

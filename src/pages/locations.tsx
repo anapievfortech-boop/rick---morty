@@ -1,44 +1,74 @@
 import logoLocations from "../assets/rick-and-morty-locations.jpg";
 import LoadMore from "../components/load-button/load-more";
 import LocationCard from "../components/location/location-card";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchLocationsPage,
+  selectLocationstate,
+  setFilters,
+} from "../store/locations/locations-slice";
+import type { AppDispatch } from "../store/store";
+import { useEffect, useMemo, useState } from "react";
 import type { Location } from "../types";
-import { locationFetch } from "../api";
-import Select from "../components/select-option";
-import { selectOptions } from "../data/select-options";
+import SelectFilterLocation from "../components/location/select-filter-location";
+import { useMobile } from "../components/contexts/mobile-context";
+import AdvencedFilterLocation from "../components/mobile-components/advanced-filter-location";
 
 export default function Locations() {
-  const [searchLocation, setSearchLocation] = useState("");
-  const [selectType, setSelectType] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
+  const isMobile = useMobile();
 
   const {
-    data,
+    data: allLocations,
+    filters,
     isLoading,
     isError,
-    fetchNextPage,
     hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["location"],
-    queryFn: locationFetch,
-    initialPageParam: 1,
-    getNextPageParam: (_, __, lastPageParam) => {
-      if (lastPageParam >= 7) return undefined;
-      return lastPageParam + 1;
-    },
-  });
+  } = useSelector(selectLocationstate);
 
-  const filteredSearchLocation =
-    data?.pages.flatMap((page) =>
-      page.filter(
-        (location) =>
-          location.name.toLowerCase().includes(searchLocation.toLowerCase()) &&
-          location.type.toLowerCase().includes(selectType.toLowerCase()),
-      ),
-    ) || [];
+  const [searchInput, setSearchInput] = useState(filters.searchLocation);
 
-  if (isLoading) {
+  const filteredSearchLocation = useMemo(() => {
+    return allLocations.filter((location) => {
+      const matchesName = location.name
+        .toLowerCase()
+        .includes(filters.searchLocation.toLowerCase());
+      const matchesType = location.type
+        .toLowerCase()
+        .includes(filters.selectType.toLowerCase());
+      const matchesDimension = location.dimension
+        .toLowerCase()
+        .includes(filters.selectDimension.toLowerCase());
+      return matchesName && matchesType && matchesDimension;
+    });
+  }, [allLocations, filters]);
+
+  useEffect(() => {
+    if (allLocations.length === 0 && !isLoading && hasNextPage) {
+      dispatch(fetchLocationsPage());
+    }
+  }, [dispatch]);
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !isLoading) {
+      dispatch(fetchLocationsPage());
+    }
+  };
+
+  const handleFilterChange = (
+    filterName: keyof typeof filters,
+    value: string,
+  ) => {
+    dispatch(setFilters({ [filterName]: value }));
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    handleFilterChange("searchLocation", value);
+  };
+
+  if (isLoading && allLocations.length === 0) {
     return <div>Идет загрузка, подождите!</div>;
   }
 
@@ -56,49 +86,53 @@ export default function Locations() {
       <div className="form-list">
         <form action="" className="form">
           <div style={{ position: "relative" }}>
-            <a className="search-logo" href="#" />
+            <a className="search-logo" />
             <input
               type="text"
               className="form-input locations-input"
               placeholder="Filter by name..."
-              value={searchLocation}
-              onChange={(e) => setSearchLocation(e.target.value)}
+              value={searchInput}
+              onChange={handleSearchInputChange}
             />
           </div>
-          <Select
-            className="form-select hide-on-mobile"
-            name="Type"
-            id=""
-            value={selectType}
-            onChange={setSelectType}
-            options={selectOptions.type}
-          />
-          <Select
-            className="form-select hide-on-mobile"
-            name="Type"
-            id=""
-            value={selectType}
-            onChange={setSelectType}
-            options={selectOptions.type}
-          />
+          {!isMobile ? (
+            <SelectFilterLocation
+              selectType={filters.selectType}
+              selectDimension={filters.selectDimension}
+              setSelectType={(val) => {
+                handleFilterChange("selectType", val);
+              }}
+              setSelectDimension={(val) => {
+                handleFilterChange("selectDimension", val);
+              }}
+            />
+          ) : (
+            <AdvencedFilterLocation
+              selectType={filters.selectType}
+              selectDimension={filters.selectDimension}
+              setSelectType={(val) => {
+                handleFilterChange("selectType", val);
+              }}
+              setSelectDimension={(val) => {
+                handleFilterChange("selectDimension", val);
+              }}
+            />
+          )}
         </form>
+        <ul className="locations-cards wrapper">
+          {filteredSearchLocation.map((location: Location) => (
+            <LocationCard
+              key={location.id}
+              id={location.id}
+              name={location.name}
+              dimension={location.dimension}
+              type={location.type}
+              residents={location.residents}
+            />
+          ))}
+        </ul>
       </div>
-      <ul className="locations-cards wrapper">
-        {filteredSearchLocation.map((location: Location) => (
-          <LocationCard
-            key={location.id}
-            id={location.id}
-            name={location.name}
-            dimension={location.dimension}
-            type={location.type}
-            residents={location.residents}
-          />
-        ))}
-      </ul>
-      <LoadMore
-        onClick={() => fetchNextPage()}
-        disabled={!hasNextPage || isFetchingNextPage}
-      />
+      <LoadMore onClick={handleLoadMore} disabled={!hasNextPage || isLoading} />
     </div>
   );
 }

@@ -8,7 +8,7 @@ export interface SelectConfig {
   gender: SelectOption[];
   status: SelectOption[];
   type: SelectOption[];
-  dimention: SelectOption[];
+  dimension: SelectOption[];
 }
 
 export interface SelectProps {
